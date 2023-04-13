@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-filters = ["Apple Music","Spotify","Deezer","YouTube Music","music.apple.com", "open.spotify.com", "deezer.com", "music.youtube.com"]
+filters = ["Apple Music", "Spotify", "Deezer", "YouTube Music", "osu!", "music.apple.com", "open.spotify.com", "deezer.com", "music.youtube.com", "osu.ppy.sh", "lazer.ppy.sh", "old.ppy.sh"]
 
 query = input("Enter search query: ")
 has_results = False
@@ -16,15 +16,21 @@ for page_number in range(1, 3):
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.content, "html.parser")
 
-    results = soup.find_all('div', class_='tF2Cxc')
+    results = soup.find_all('div', class_= ['tF2Cxc', 'mLmaBd'])
 
     if not results:
         print(f"No results found, double check your search.")
         exit()
     else:
         all_filtered = True
+        heading = None
         for result in results:
-            heading = result.find('h3').text
+            if result.get('class') == ['g', 'Ww4FFb', 'vt6azd', 'tF2Cxc', 'asEBEc']:
+                heading = result.find('h3').text
+            elif result.get('class') == ['mLmaBd']:
+                heading = result.find('span', class_='cHaqb').text
+            else:
+                continue
             link = result.find('a')['href']
             skip = False
             for result_filter in filters:
@@ -33,7 +39,7 @@ for page_number in range(1, 3):
                     break
             if not skip:
                 all_filtered = False
-                print(f"{heading}: {link}")
+                print(f"\n{heading}: {link}")
         if all_filtered and page_number == 1:
             print("No search results found on the first page, searching the second page...")
         elif all_filtered == False:
